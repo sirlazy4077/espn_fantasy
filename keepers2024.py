@@ -1,6 +1,7 @@
 from pypdf import PdfReader
 import re
 import csv
+import math
 
 #FIXME haven't quite gotten bye weeks to work yet
 
@@ -59,6 +60,19 @@ def player_parser(players_raw,pattern_type,value_doubledigits):
     
         # players_dict.update({p_name:[p_rank,p_position,p_position_rank,p_team,p_value,p_bye]}) #FIXME
         players_dict.update({p_name:[p_rank,p_position,p_position_rank,p_team,p_value]})
+
+#TODO inflation value changer
+def inflation_adjuster(inflation_rate):
+    float(inflation_rate)
+    for key,val in players_dict.items():
+        p_name = key
+        p_rank = val[0]
+        p_position = val[1]
+        p_position_rank = v[2]
+        p_team = v[3]
+        p_value = v[4]
+        new_p_value = math.floor(p_value + p_value*inflation_rate,0)
+        players_dict.update({p_name:[p_rank,p_position,p_position_rank,p_team,new_p_value]})
 
 # what is essentially the main of the program, TODO make this a proper program
 #strip the ESPN top 300 rankings pdf for player data
