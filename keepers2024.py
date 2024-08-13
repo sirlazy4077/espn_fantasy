@@ -34,32 +34,54 @@ def player_parser(players_raw,pattern_type,value_doubledigits):
         p_position_rank = int(re.findall(pattern_pos_rank,p_raw[1])[0])
 
         #sort out if the player's line had the auction value and bye week concatenated to split them up
-        if (pattern_type == "1") :
-            p_value = p_value_raw
-            # p_bye = p_raw[6] #FIXME
-            
-        elif (pattern_type == "2"):
-            p_value = p_value_raw
-            # p_bye = p_raw[7] #FIXME
-                
-        elif (pattern_type == "1b") or (pattern_type == "2b"):
-                
+        if (pattern_type == "1"):
             if (p_rank < value_doubledigits):
                 p_value = p_value_raw[0:2]
-                # p_bye = p_value_raw[2:] #FIXME
+                p_bye_raw = p_value_raw[2:] #FIXME
+                try:
+                    p_bye_int = int(p_bye_raw)
+                    if p_bye_int > 16:
+                        p_bye = p_bye_raw
+                    else:
+                        p_bye = p_raw[6]
+                except: 
+                    p_bye = p_raw[6]
+                
             else:
                 p_value = p_value_raw[0]
-                # p_bye = p_value_raw[1:] #FIXME
+                p_bye = p_value_raw[1:] #FIXME
             
-        #check if the player's bye exists after the logic, if not then they already existed and don't write to the dict
-        # if p_bye == '': #FIXME
-        #     continue
-        
+        elif (pattern_type == "2"):
+            if (p_rank < value_doubledigits):
+                p_value = p_value_raw[0:2]
+                p_bye_raw = p_value_raw[2:] #FIXME
+                try:
+                    p_bye_int = int(p_bye_raw)
+                    if p_bye_int > 16:
+                        p_bye = p_bye_raw
+                    else:
+                        p_bye = p_raw[7]
+                except: 
+                    p_bye = p_raw[7]
+            else:
+                p_value = p_value_raw[0]
+                p_bye = p_value_raw[1:] #FIXME
+                
+        elif (pattern_type == "1b") or (pattern_type == "2b"):
+            if (p_rank < value_doubledigits):
+                p_value = p_value_raw[0:2]
+                p_bye = p_value_raw[2:] #FIXME
+            else:
+                p_value = p_value_raw[0]
+                p_bye = p_value_raw[1:] #FIXME
+            
         int(p_value)
-        # int(p_bye) #FIXME
+        # if p_bye == '':
+        #     print(p_name) #DEBUG
+        #     continue #FIXME
     
-        # players_dict.update({p_name:[p_rank,p_position,p_position_rank,p_team,p_value,p_bye]}) #FIXME
-        players_dict.update({p_name:[p_rank,p_position,p_position_rank,p_team,p_value]})
+        players_dict.update({p_name:[p_rank,p_position,p_position_rank,p_team,p_value,p_bye]}) #FIXME
+        # players_dict.update({p_name:[p_rank,p_position,p_position_rank,p_team,p_value]})
 
 #TODO inflation value changer
 def inflation_adjuster(inflation_rate):
@@ -98,19 +120,22 @@ pattern_2b = r'[0-9]+\. \([^)]*\) [A-Za-z0-9\-\.\']+ [A-Za-z0-9\-\.\'\/]+ [A-Za-
 players_raw_2b = re.findall(pattern_2b, text_lower)
 
 #run the player data to be cleaned
+
 player_parser(players_raw_1,"1",57)
 player_parser(players_raw_1b,"1b",57)
+
 player_parser(players_raw_2,"2",57)
 player_parser(players_raw_2b,"2b",57)
+
 
 # print(players_dict) #DEBUG
 
 #sort on overall rank and load the data to a csv
 players_dict_sorted = {key: value for key, value in sorted(players_dict.items(),key=lambda item: item[1][0],reverse=False)}
 
-# header = ['player_name','overall_rank','position','position_rank','team','auction_value','bye_week'] #FIXME
-header = ['player_name','overall_rank','position','position_rank','team','auction_value']
-with open('test.csv','w',newline='') as csvfile:
+header = ['player_name','overall_rank','position','position_rank','team','auction_value','bye_week'] #FIXME
+# header = ['player_name','overall_rank','position','position_rank','team','auction_value']
+with open('test01.csv','w',newline='') as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(header)
     
